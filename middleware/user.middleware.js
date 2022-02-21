@@ -13,8 +13,7 @@ const generateUserID = (req, res, next) => {
 const validateUserFiles = (req, res, next) => {
    if (!req.files.length && !res.locals.files.length)
       res.status(406).json({ success: false, error: 'No profile photo provided' })
-   else
-      next()
+   else next()
 }
 
 const validateCreateUser = async (req, res, next) => {
@@ -24,9 +23,11 @@ const validateCreateUser = async (req, res, next) => {
    } catch (err) {
       await Promise.all(
          res.locals.files.map(async file => {
-            fs.unlink(file, err => {
-               if (err) logger.error({ error: err })
-            })
+            try {
+               await fs.promises.unlink(file)
+            } catch (err) {
+               logger.error({ error: err })
+            }
          })
       )
       logger.error({ error: err })
@@ -37,16 +38,16 @@ const validateCreateUser = async (req, res, next) => {
 const checkForDuplicates = async (req, res, next) => {
    try {
       const duplicateUser = await UserModel.findOne({ email: req.body.email })
-      if (duplicateUser) 
-         throw 'A user with this email already exists!'
-      else 
-         next()
+      if (duplicateUser) throw 'A user with this email already exists!'
+      else next()
    } catch (err) {
       await Promise.all(
          res.locals.files.map(async file => {
-            fs.unlink(file, err => {
-               if (err) logger.error({ error: err })
-            })
+            try {
+               await fs.promises.unlink(file)
+            } catch (err) {
+               logger.error({ error: err })
+            }
          })
       )
       logger.error({ error: err })
@@ -68,10 +69,8 @@ const checkUserExists = async (req, res, next) => {
    try {
       const user = await UserModel.findOne({ email: req.body.email })
       res.locals.user = user
-      if (!user) 
-         throw 'User with this email does\'t exist'
-      else 
-         next()
+      if (!user) throw "User with this email does't exist"
+      else next()
    } catch (err) {
       logger.error({ error: err })
       res.status(401).json({ success: false, error: err })

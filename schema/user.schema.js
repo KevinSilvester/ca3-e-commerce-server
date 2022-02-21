@@ -38,4 +38,4 @@ const loginUserSchema = z.object({
    })
 })
 
-module.exports = { createUserSchema, loginUserSchema  }
+module.exports = { createUserSchema, loginUserSchema }

@@ -3,15 +3,11 @@ const fs = require('fs')
 
 const JWT_PRIVATE_KEY = fs.readFileSync(process.env.JWT_KEY_LOCATION, 'utf8')
 
-// const createToken = (email, accessLevel) => {
-//    expiresIn = accessLevel === parseInt(process.env.ACCESS_LEVEL_ADMIN) ? '1h' : '5h'
-//    return jwt.sign({ email, accessLevel }, JWT_PRIVATE_KEY, { expiresIn })
-// }
-
 const createToken = (req, res, next) => {
-   const expiresIn = req.body.accessLevel === parseInt(process.env.ACCESS_LEVEL_ADMIN) ? '1h' : '5h'
+   const accessLevel = req.body.accessLevel || res.locals.user.accessLevel
+   const expiresIn = accessLevel === parseInt(process.env.ACCESS_LEVEL_ADMIN) ? '1h' : '5h'
    res.locals.token = jwt.sign(
-      { id: req.body._id, accessLevel: req.body.accessLevel },
+      { email: req.body.email, accessLevel },
       JWT_PRIVATE_KEY,
       { expiresIn }
    )
@@ -23,7 +19,7 @@ const verifyToken = (req, res, next) => {
       const bearerHeader = req.headers.authorization
       if (!bearerHeader) throw 'Access Token not provided'
       const encodedToken = bearerHeader.split(' ')[1]
-      const decodedToken = jwt.verify(encodedToken, JWT_PRIVATE_KEY)
+      const decodedToken = jwt.verify(encodedToken, JWT_PRIVATE_KEY, {algorithm: "HS256"})
       res.locals.decodedToken = decodedToken
       next()
    } catch (err) {

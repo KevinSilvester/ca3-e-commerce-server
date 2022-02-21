@@ -16,8 +16,9 @@ const {
 const { createToken, verifyToken, verifyAdmin } = require('../middleware/auth')
 const logger = require('../utils/logger')
 const multerConfig = require('../config/multerConfig')
+const imageToBase64 = require('../utils/imageToBase64')
 
-const { PASSWORD_HASH_SALT_ROUNDS, JWT_KEY_LOCATION, JWT_EXPIRY } = process.env
+const { PASSWORD_HASH_SALT_ROUNDS } = process.env
 const router = Router()
 const upload = multer(multerConfig('profile'))
 
@@ -40,13 +41,10 @@ router.post(
             profilePhoto: res.locals.files[0]
          }
          const user = await UserModel.create(document)
-         // const token = createToken(user.email, user.accessLevel)
-         const imgBase64 = await fs.promises.readFile(user.profilePhoto, { encoding: 'base64' })
-         const imgType = user.profilePhoto.split('.').pop()
          res.status(200).json({
             success: true,
-            message: 'Registration successful! ヾ(≧▽≦*)o',
-            user: { ...user.toObject(), profilePhoto: `data:image/${imgType};base64,${imgBase64}` },
+            message: 'Registration successful!',
+            user: { ...user.toObject(), profilePhoto: await imageToBase64(user.profilePhoto) },
             token: res.locals.token
          })
       } catch (err) {
@@ -59,17 +57,13 @@ router.post(
 // User login
 router.post('/login', validateLoginUser, checkUserExists, createToken, async (req, res) => {
    try {
-      console.log(req.headers)
       const { user } = res.locals
       const compare = await bcrypt.compare(req.body.password, user.password)
       if (!compare) throw 'Password incorrect'
-      // const token = createToken(user._id, user.accessLevel)
-      const imgBase64 = await fs.promises.readFile(user.profilePhoto, { encoding: 'base64' })
-      const imgType = user.profilePhoto.split('.').pop()
       res.status(200).json({
          success: true,
-         message: 'Login successful! ヾ(≧▽≦*)o',
-         user: { ...user.toObject(), profilePhoto: `data:image/${imgType};base64,${imgBase64}` },
+         message: 'Login successful!',
+         user: { ...user.toObject(), profilePhoto: await imageToBase64(user.profilePhoto) },
          token: res.locals.token
       })
    } catch (err) {
@@ -80,14 +74,38 @@ router.post('/login', validateLoginUser, checkUserExists, createToken, async (re
 
 // User logout
 router.post('/logout', verifyToken, async (req, res) => {
-   res.status(200).json({ success: true, message: 'Logged out successfully! ヾ(≧▽≦*)o', })
+   res.status(200).json({ success: true, message: 'Logged out successfully!' })
 })
 
+// Get List of All Users
 router.get('/', verifyToken, verifyAdmin, async (req, res) => {
    try {
+      const { query } = req
+      let aggregate = []
+      let temp = []
 
+      if (query.searchValue && query.searchQuery)
+         aggregate.push({ $match: { [query.searchValue]: { $regex: query.searchQuery } } })
+
+      if (query.sortValue && (query.sortOrder === '-1' || query.sortOrder === '1'))
+         aggregate.push({ $sort: { [query.sortValue]: parseInt(query.sortOrder) } })
+
+      if (aggregate.length > 0)
+         temp = await UserModel.aggregate(aggregate)
+      else 
+         temp = await UserModel.find().sort({ updatedAt: -1 })
+
+      const result = await Promise.all(
+         temp.map(async user => ({
+            ...user.toObject(),
+            profilePhoto: await imageToBase64(user.profilePhoto)
+         }))
+      )
+
+      res.status(200).json({ success: true, aggregate, users: result })
    } catch (err) {
-      
+      logger.error({ error: err })
+      res.status(401).json({ success: false, error: err })
    }
 })
 

@@ -7,7 +7,6 @@ const logger = require('../utils/logger')
 const router = Router()
 
 router.post('/products', validateProductBody, async (req, res, next) => {
-   
    try {
       console.log(res, req, next)
       const doc = { ...req.body, _id: generateId('product') }
