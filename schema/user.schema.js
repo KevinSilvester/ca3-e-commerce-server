@@ -3,7 +3,7 @@ const { z } = require('zod')
 const pattern =
    /^(?!.*\s)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`!?"£$€₹%^&*~_\-+=:;'@#,./\\()[\]{}<>]).{10,}$/gm
 
-const bodySchema = z.object({
+const createUserSchema = z.object({
    body: z.object({
       name: z.string({ required_error: 'No name provided' }),
       email: z
@@ -27,4 +27,15 @@ const bodySchema = z.object({
    })
 })
 
-module.exports = { bodySchema }
+const loginUserSchema = z.object({
+   body: z.object({
+      email: z
+         .string({ required_error: 'No email provided' })
+         .email({ message: 'Not a valid email' }),
+      password: z
+         .string({ required_error: 'No password provided' })
+         .regex(pattern, { message: 'Password does not meet requirements' })
+   })
+})
+
+module.exports = { createUserSchema, loginUserSchema  }
