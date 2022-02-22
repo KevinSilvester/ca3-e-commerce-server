@@ -81,28 +81,39 @@ router.post('/logout', verifyToken, async (req, res) => {
 router.get('/', verifyToken, verifyAdmin, async (req, res) => {
    try {
       const { query } = req
-      let aggregate = []
+      let pipeline = []
       let temp = []
 
       if (query.searchValue && query.searchQuery)
-         aggregate.push({ $match: { [query.searchValue]: { $regex: query.searchQuery } } })
+         pipeline.push({ $match: { [query.searchValue]: { $regex: query.searchQuery } } })
 
       if (query.sortValue && (query.sortOrder === '-1' || query.sortOrder === '1'))
-         aggregate.push({ $sort: { [query.sortValue]: parseInt(query.sortOrder) } })
+         pipeline.push({ $sort: { [query.sortValue]: parseInt(query.sortOrder) } })
 
-      if (aggregate.length > 0)
-         temp = await UserModel.aggregate(aggregate)
-      else 
+      if (pipeline.length > 0)
+         temp = await UserModel.aggregate(pipeline)
+      else
          temp = await UserModel.find().sort({ updatedAt: -1 })
 
       const result = await Promise.all(
-         temp.map(async user => ({
-            ...user.toObject(),
-            profilePhoto: await imageToBase64(user.profilePhoto)
-         }))
+         temp.map(async user => {
+            try {
+               return {
+                  ...user.toObject(),
+                  profilePhoto: await imageToBase64(user.profilePhoto)
+               }
+            } catch {
+               return {
+                  ...user,
+                  profilePhoto: await imageToBase64(user.profilePhoto)
+               }
+            }
+         })
       )
 
-      res.status(200).json({ success: true, aggregate, users: result })
+      console.log(result)
+
+      res.status(200).json({ success: true, users: result })
    } catch (err) {
       logger.error({ error: err })
       res.status(401).json({ success: false, error: err })
