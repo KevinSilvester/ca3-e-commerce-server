@@ -18,7 +18,7 @@ const logger = require('../utils/logger')
 const multerConfig = require('../config/multerConfig')
 const imageToBase64 = require('../utils/imageToBase64')
 
-const { PASSWORD_HASH_SALT_ROUNDS } = process.env
+const { PASSWORD_HASH_SALT_ROUNDS, ACCESS_LEVEL_NORMAL_USER, ACCESS_LEVEL_ADMIN } = process.env
 const router = Router()
 const upload = multer(multerConfig('profile'))
 
@@ -119,9 +119,16 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
 })
 
 // Get single user
-router.get('/:id', verifyToken, verifyAdmin, async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
    try {
       const user = await UserModel.findById(req.params.id)
+
+      if (
+         res.locals.decodedToken.accessLevel < parseInt(ACCESS_LEVEL_ADMIN) &&
+         user.email !== res.locals.decodedToken.email
+      )
+         throw 'Access Denied'
+
       const result = await {
          ...user.toObject(),
          profilePhoto: await imageToBase64(user.profilePhoto)

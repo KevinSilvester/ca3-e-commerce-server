@@ -4,7 +4,7 @@ const multerConfig = subDirName => {
    const fullDirName = `./${process.env.IMAGE_UPLOAD_FOLDER}/${subDirName}/`
 
    const getFileName = (req, file) =>
-      `${req.res.locals.id}-${req.files?.length}.${file.mimetype.split('/')[1]}`
+      `${req.res.locals.id}-${req.files?.length}.${file.mimetype.split('/')[1].replace('e', '')}`
 
    return {
       fileFilter: (req, file, cb) => {
