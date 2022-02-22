@@ -111,12 +111,37 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
          })
       )
 
-      console.log(result)
-
-      res.status(200).json({ success: true, users: result })
+      res.status(200).json({ success: true, message: 'Here\'s all the users!', users: result })
    } catch (err) {
       logger.error({ error: err })
-      res.status(401).json({ success: false, error: err })
+      res.status(404).json({ success: false, error: err })
+   }
+})
+
+// Get single user
+router.get('/:id', verifyToken, verifyAdmin, async (req, res) => {
+   try {
+      const user = await UserModel.findById(req.params.id)
+      const result = await {
+         ...user.toObject(),
+         profilePhoto: await imageToBase64(user.profilePhoto)
+      }
+      res.status(200).json({ success: true, message: `Here's user ${req.params.id}!`, user: result })
+   } catch (err) {
+      logger.error({ error: err })
+      res.status(404).json({ success: false, error: err })
+   }
+})
+
+// Delete single user
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
+   try {
+      const user = await UserModel.findByIdAndDelete(req.params.id)
+      await fs.promises.unlink(user.profilePhoto)
+      res.status(200).json({ success: true, message: `User ${req.params.id} deleted!` })
+   } catch (err) {
+      logger.error({ error: err })
+      res.status(404).json({ success: false, error: err })
    }
 })
 
