@@ -18,6 +18,7 @@ const { generateID, createFileArray, checkForFiles } = require('../middleware/ut
 const logger = require('../utils/logger')
 const imageToBase64 = require('../utils/imageToBase64')
 const deleteFiles = require('../utils/deleteFiles')
+const moveFile = require('../utils/moveFile')
 
 const { PASSWORD_HASH_SALT_ROUNDS, ACCESS_LEVEL_NORMAL_USER, ACCESS_LEVEL_ADMIN } = process.env
 const router = Router()
@@ -53,7 +54,8 @@ router.post(
       } catch (err) {
          await deleteFiles(res.locals.files)
          logger.error({ error: err })
-         // res.status(409).json({ success: false, error: err })
+         res.status(409).json({ success: false, error: err })
+         console.log(err)
       }
    }
 )
@@ -70,7 +72,7 @@ router.post(
          const compare = await bcrypt.compare(req.body.password, user.password)
 
          if (!compare) throw 'Password incorrect'
-         
+         console.log(res)
          return res.status(200).json({
             success: true,
             message: 'Login successful!',
@@ -86,7 +88,8 @@ router.post(
 
 // User logout
 router.post('/logout', verifyToken, async (req, res) => {
-   return res.status(200).json({ success: true, message: 'Logged out successfully!' })
+   console.log(res)
+   res.status(200).json({ success: true, message: 'Logged out successfully!' })
 })
 
 // Get List / Search all Users
@@ -171,15 +174,10 @@ router.put(
          if (!Object.keys(req.body).length && !res.locals.files.length) throw 'Nothing to update'
 
          const oldUser = await UserModel.findById(req.params.id).lean()
-         let newFilePath = undefined
 
          if (res.locals.decodedToken.email !== oldUser.email) throw 'Access Denied'
 
-         if (!!res.locals.files.length) {
-            newFilePath = res.locals.files[0].replace('temp', 'profile')
-            await fs.promises.rename(res.locals.files[0], newFilePath)
-         }
-
+         !!res.locals.files.length && await moveFile(res.locals.file[0], 'temp', 'destination')
          
          const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, { email: req.body.email}).lean()
 
@@ -202,50 +200,5 @@ router.put(
       }
    }
 )
-
-// // Edit user
-// router.put(
-//    '/:id',
-//    verifyToken,
-//    createFileArray,
-//    temp.array('profilePhoto', 1),
-//    validateEditUser,
-//    checkForDuplicates,
-//    createToken,
-//    async (req, res) => {
-//       try {
-//          const oldUser = await UserModel.findById(req.params.id)
-//          let password,
-//             profilePhoto,
-//             document = {}
-
-//          if (res.locals.decodedToken.email !== oldUser.email) throw 'Access denied'
-
-//          if (req.body.password)
-//             document.password = await bcrypt.hash(req.body.password, parseInt(PASSWORD_HASH_SALT_ROUNDS))
-
-//          if (res.locals.files.length)
-//             document.profilePhoto = res.locals.files[0]
-
-//          if (res.locals.email)
-//             document.email = req.body.email
-
-//          const newUser = await UserModel.findByIdAndUpdate(req.params.id, document)
-
-//          return res.status(200).json({
-//             success: true,
-//             message: 'Registration successful!',
-//             user: {
-//                ...newUser.toObject(),
-//                profilePhoto: await imageToBase64(newUser.profilePhoto)
-//             },
-//             token: res.locals.token
-//          })
-//       } catch (err) {
-//          logger.error({ error: err })
-//          return res.status(404).json({ success: false, error: err })
-//       }
-//    }
-// )
 
 module.exports = router

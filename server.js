@@ -21,10 +21,10 @@ app.use(morgan('combined'))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-app.use('/api', productRoutes)
+app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
 
-app.listen(port, 'localhost', async () => {
+app.listen(port, '127.0.0.1', async () => {
    logger.info(`Server running at http://localhost:${port} or http://127.0.0.1:${port}`)
    // await imageUpload(base64, 'test', 'user-profile')
    await mongodb()

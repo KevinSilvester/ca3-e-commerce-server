@@ -11,6 +11,7 @@ const validateRequestBody = schema => async (req, res, next) => {
    } catch (err) {
       if (res.locals.files && res.locals.files.length)
          await deleteFiles(res.locals.files)
+      console.log('here')
       logger.error({ error: err })
       return res.status(400).json({ success: false, error: err })
    }
@@ -22,9 +23,9 @@ const checkForDuplicates = async (req, res, next) => {
       if (email) {
          const duplicateUser = await UserModel.findOne({ email })
          if (duplicateUser) throw 'A user with this email already exists!'
-         next()
+         else next()
       }
-      next()
+      else next()
    } catch (err) {
       if (res.locals.files && res.locals.files.length)
          await deleteFiles(res.locals.files)
