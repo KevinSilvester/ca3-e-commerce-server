@@ -1,7 +1,10 @@
-require('dotenv').config()
+// @ts-check
 const cloudinary = require('../config/cloudinary')
 const logger = require('../utils/logger')
 
+/** 
+ * @type {typeof import('@utils/imageUpload')} 
+ */
 const imageUpload = async (base64, imageName, destination) => {
    try {
       const res = await cloudinary.uploader.upload(base64, {

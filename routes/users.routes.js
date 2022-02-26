@@ -1,3 +1,4 @@
+// @ts-check
 const { Router } = require('express')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
@@ -11,7 +12,8 @@ const {
    checkForDuplicates,
    checkUserExists,
    validateRequestBody,
-   createPipeline
+   createPipeline,
+   checkIfBodyEmpty
 } = require('../middleware/user.middleware')
 const { createToken, verifyToken, verifyAdmin } = require('../middleware/auth')
 const { generateID, createFileArray, checkForFiles } = require('../middleware/util')
@@ -22,15 +24,15 @@ const moveFile = require('../utils/moveFile')
 
 const { PASSWORD_HASH_SALT_ROUNDS, ACCESS_LEVEL_NORMAL_USER, ACCESS_LEVEL_ADMIN } = process.env
 const router = Router()
-const upload = multer(multerConfig('profile'))
-const temp = multer(multerConfig('temp'))
+const uploadProfile = multer(multerConfig('profile'))
+const uploadTemp = multer(multerConfig('temp'))
 
 // Create new user
 router.post(
    '/register',
    generateID('user'),
    createFileArray,
-   upload.array('profilePhoto', 1),
+   uploadProfile.array('profilePhoto', 1),
    checkForFiles,
    validateRequestBody(createUserSchema),
    checkForDuplicates,
@@ -48,7 +50,7 @@ router.post(
          res.status(200).json({
             success: true,
             message: 'Registration successful!',
-            user: { ...user.toObject(), profilePhoto: await imageToBase64(user.profilePhoto) },
+            user: { ...user.toObject(), profilePhoto: await imageToBase64(user.profilePhoto.toString()) },
             token: res.locals.token
          })
       } catch (err) {
@@ -72,7 +74,6 @@ router.post(
          const compare = await bcrypt.compare(req.body.password, user.password)
 
          if (!compare) throw 'Password incorrect'
-         console.log(res)
          return res.status(200).json({
             success: true,
             message: 'Login successful!',
@@ -88,7 +89,6 @@ router.post(
 
 // User logout
 router.post('/logout', verifyToken, async (req, res) => {
-   console.log(res)
    res.status(200).json({ success: true, message: 'Logged out successfully!' })
 })
 
@@ -125,16 +125,15 @@ router.get('/:id', verifyToken, async (req, res) => {
       const user = await UserModel.findById(req.params.id).lean()
 
       if (!user) throw 'No user found'
-
       if (
          res.locals.decodedToken.accessLevel < parseInt(ACCESS_LEVEL_ADMIN) &&
          user.email !== res.locals.decodedToken.email
       )
          throw 'Access Denied'
-
-      const result = await {
+      
+      const result = {
          ...user,
-         profilePhoto: await imageToBase64(user.profilePhoto)
+         profilePhoto: await imageToBase64(user.profilePhoto.toString())
       }
 
       return res.status(200).json({
@@ -152,7 +151,7 @@ router.get('/:id', verifyToken, async (req, res) => {
 router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
    try {
       const user = await UserModel.findByIdAndDelete(req.params.id)
-      await fs.promises.unlink(user.profilePhoto)
+      await fs.promises.unlink(user.profilePhoto.toString())
       return res.status(200).json({ success: true, message: `User ${req.params.id} deleted!` })
    } catch (err) {
       logger.error({ error: err })
@@ -165,25 +164,36 @@ router.put(
    generateID(''),
    verifyToken,
    createFileArray,
-   temp.array('profilePhoto', 1),
+   uploadTemp.array('profilePhoto', 1),
+   checkIfBodyEmpty,
    validateRequestBody(editUserSchema),
    checkForDuplicates,
    createToken('edit'),
    async (req, res) => {
       try {
-         if (!Object.keys(req.body).length && !res.locals.files.length) throw 'Nothing to update'
-
          const oldUser = await UserModel.findById(req.params.id).lean()
+         let document = req.body
 
-         if (res.locals.decodedToken.email !== oldUser.email) throw 'Access Denied'
-
-         !!res.locals.files.length && await moveFile(res.locals.file[0], 'temp', 'destination')
+         if (res.locals.decodedToken.email !== oldUser.email) 
+            return res.status(404).json({ success: false, error: 'Access Denied' })
          
-         const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, { email: req.body.email}).lean()
+         if (!!res.locals.files.length)
+            await moveFile(res.locals.files[0], 'temp', 'profile')
+
+         if ('password' in document) {
+            const password = await bcrypt.hash(
+               req.body.password,
+               parseInt(PASSWORD_HASH_SALT_ROUNDS)
+            )
+            document = { ...document, password }
+         }
+         
+         const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, document).lean()
+
 
          const user = await {
             ...updatedUser,
-            profilePhoto: await imageToBase64(updatedUser.profilePhoto)
+            profilePhoto: await imageToBase64(updatedUser.profilePhoto.toString())
          }
 
          return res.status(200).json({

@@ -1,6 +1,7 @@
+// @ts-check
 const express = require('express')
 const morgan = require('morgan')
-const helmet = require('helmet')
+const helmet = require('helmet').default
 const cors = require('cors')
 require('dotenv').config({ path: './config/.env' })
 
@@ -12,7 +13,7 @@ const productRoutes = require('./routes/product.routes')
 const userRoutes = require('./routes/users.routes')
 
 const app = express()
-const port = process.env.PORT || 4000
+const port = parseInt(process.env.PORT) || 4000
 // const add
 
 app.use(helmet())

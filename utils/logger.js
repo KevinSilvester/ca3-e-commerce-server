@@ -1,5 +1,9 @@
-const pino = require('pino')
+// @ts-check
+const pino = require('pino').default
 
+/**
+ * @type {typeof import('@utils/logger')}
+ */
 const logger = pino({
    transport: {
       target: 'pino-pretty',

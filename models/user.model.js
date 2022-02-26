@@ -1,5 +1,9 @@
+// @ts-check
 const { Schema, model } = require('mongoose')
 
+/**
+ * @type {typeof import('@models/user.model').UserSchema}
+ */
 const UserSchema = new Schema(
    {
       _id: { type: String, required: true },
@@ -22,4 +26,8 @@ const UserSchema = new Schema(
    }
 )
 
-module.exports = model('User', UserSchema)
+/**
+ * @type {typeof import('@models/user.model').UserModel}
+ */
+const UserModel = model('User', UserSchema)
+module.exports = UserModel

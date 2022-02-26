@@ -1,0 +1,1 @@
+bash -c "tsc ./**/*.js --declaration --allowJs --emitDeclarationOnly --outDir types"

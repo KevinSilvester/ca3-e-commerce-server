@@ -1,5 +1,9 @@
-const { Schema, model, Types } = require('mongoose')
+// @ts-check
+const { Schema, model } = require('mongoose')
 
+/**
+ * @type {typeof import('@models/purchase.model').PurchaseSchema}
+ */
 const PurchaseSchema = new Schema(
    {
       _id: { type: String, required: true },
@@ -20,4 +24,9 @@ const PurchaseSchema = new Schema(
    }
 )
 
-module.exports = model('Purchase', PurchaseSchema)
+/**
+ * @type {typeof import('@models/purchase.model').PurchaseModel}
+ */
+const PurchaseModel = model('Purchase', PurchaseSchema)
+
+module.exports = PurchaseModel

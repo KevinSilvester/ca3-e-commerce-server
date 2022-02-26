@@ -1,5 +1,9 @@
+// @ts-check
 const { Schema, model } = require('mongoose')
 
+/**
+ * @type {typeof import('@models/product.model').StockSchema}
+ */
 const StockSchema = new Schema(
    {
       XS: { type: Number, required: true, min: 0 },
@@ -12,6 +16,9 @@ const StockSchema = new Schema(
    { _id: false }
 )
 
+/**
+ * @type {typeof import('@models/product.model').ProductSchema}
+ */
 const ProductSchema = new Schema(
    {
       _id: { type: String, required: true },
@@ -31,4 +38,9 @@ const ProductSchema = new Schema(
    }
 )
 
-module.exports = model('Product', ProductSchema)
+/**
+ * @type {typeof import('@models/product.model').ProductModel}
+ */
+const ProductModel = model('Product', ProductSchema)
+
+module.exports = ProductModel
