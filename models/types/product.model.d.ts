@@ -1,4 +1,4 @@
-import type { Model, Schema, SchemaDefinitionProperty } from 'mongoose'
+import type { Model, Types, Schema, SchemaDefinitionProperty } from 'mongoose'
 
 type StockSubdocument = {
    XS: SchemaDefinitionProperty<number>
@@ -21,6 +21,7 @@ type ProductDocument = {
    stock: typeof StockSchema
    description: SchemaDefinitionProperty<string>
    gender: SchemaDefinitionProperty<'men' | 'women' | 'unisex'>
+   photos: SchemaDefinitionProperty<Types.Array<string>>
 }
 
 export const ProductSchema: Schema<ProductDocument, Model<ProductDocument, {}, {}, {}>, ProductDocument, any>

@@ -34,6 +34,7 @@ const createFileArray = (req, res, next) => {
  * @param {import('express').NextFunction} next 
  */
 const checkForFiles = (req, res, next) => {
+   console.log(res.locals.files, req.body)
    !req.files.length && !res.locals.files.length
       ? res.status(406).json({ success: false, error: 'No profile photo provided' })
       : next()

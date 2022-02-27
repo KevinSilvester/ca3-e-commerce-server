@@ -24,7 +24,7 @@ const moveFiles = require('../utils/moveFiles')
 
 const { PASSWORD_HASH_SALT_ROUNDS, ACCESS_LEVEL_NORMAL_USER, ACCESS_LEVEL_ADMIN } = process.env
 const router = Router()
-const uploadProfile = multer(multerConfig('profile'))
+const upload = multer(multerConfig('profile'))
 const uploadTemp = multer(multerConfig('temp'))
 
 // Create new user
@@ -32,7 +32,7 @@ router.post(
    '/register',
    generateID('user'),
    createFileArray,
-   uploadProfile.array('profilePhoto', 1),
+   upload.array('profilePhoto', 1),
    checkForFiles,
    validateRequestBody(createUserSchema),
    checkForDuplicates,
@@ -60,7 +60,6 @@ router.post(
          await deleteFiles(res.locals.files)
          logger.error({ error: err })
          res.status(409).json({ success: false, error: err })
-         console.log(err)
       }
    }
 )

@@ -5,7 +5,6 @@ const logger = require('../utils/logger')
 const deleteFiles = require('../utils/deleteFiles')
 
 /**
- *
  * @param {import('zod').AnyZodObject} schema
  * @returns {(
  *    req: import('express').Request, 

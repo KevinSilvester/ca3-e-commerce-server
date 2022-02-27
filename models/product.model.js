@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose')
 
 /**
- * @type {typeof import('./product.model').StockSchema}
+ * @type {typeof import('./types/product.model').StockSchema}
  */
 const StockSchema = new Schema(
    {
@@ -17,7 +17,7 @@ const StockSchema = new Schema(
 )
 
 /**
- * @type {typeof import('./product.model').ProductSchema}
+ * @type {typeof import('./types/product.model').ProductSchema}
  */
 const ProductSchema = new Schema(
    {
@@ -29,7 +29,8 @@ const ProductSchema = new Schema(
       category: { type: String, required: true, enum: ['jacket', 't-shirt', 'pant', 'hoodie'] },
       stock: StockSchema,
       description: { type: String, required: true },
-      gender: { type: String, required: true, enum: ['men', 'women', 'unisex'] }
+      gender: { type: String, required: true, enum: ['men', 'women', 'unisex'] },
+      photos: { type: [String], required: true }
    },
    {
       timestamps: true,
@@ -39,7 +40,7 @@ const ProductSchema = new Schema(
 )
 
 /**
- * @type {typeof import('./product.model').ProductModel}
+ * @type {typeof import('./types/product.model').ProductModel}
  */
 const ProductModel = model('Product', ProductSchema)
 

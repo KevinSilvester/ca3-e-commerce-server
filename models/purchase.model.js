@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose')
 
 /**
- * @type {typeof import('./purchase.model').PurchaseSchema}
+ * @type {typeof import('./types/purchase.model').PurchaseSchema}
  */
 const PurchaseSchema = new Schema(
    {
@@ -25,7 +25,7 @@ const PurchaseSchema = new Schema(
 )
 
 /**
- * @type {typeof import('./purchase.model').PurchaseModel}
+ * @type {typeof import('./types/purchase.model').PurchaseModel}
  */
 const PurchaseModel = model('Purchase', PurchaseSchema)
 
