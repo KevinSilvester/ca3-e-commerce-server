@@ -4,9 +4,6 @@ const { z } = require('zod')
 const pattern =
    /^(?!.*\s)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`!?"£$€₹%^&*~_\-+=:;'@#,./\\()[\]{}<>]).{10,}$/gm
 
-/**
- * @type {typeof import('@schema/user.schema').createUserSchema}
- */
 const createUserSchema = z.object({
    body: z.object({
       name: z.string({ required_error: 'No name provided' }).min(3, { message: 'Name too short' }),
@@ -31,9 +28,6 @@ const createUserSchema = z.object({
    })
 })
 
-/**
- * @type {typeof import('@schema/user.schema').loginUserSchema}
- */
 const loginUserSchema = z.object({
    body: z.object({
       email: z
@@ -45,9 +39,6 @@ const loginUserSchema = z.object({
    })
 })
 
-/**
- * @type {typeof import('@schema/user.schema').editUserSchema}
- */
 const editUserSchema = z.object({
    body: z.object({
       name: z.string().min(3, { message: 'Name too short' }).optional(),

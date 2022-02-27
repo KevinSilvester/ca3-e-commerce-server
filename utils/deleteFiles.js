@@ -3,7 +3,7 @@ const fs = require('fs')
 const logger = require('./logger')
 
 /** 
- * @type {typeof import('@utils/deleteFiles')} 
+ * @param {Array<string>} fileArray
  */
 const deleteFiles = async fileArray => {
    await Promise.all(

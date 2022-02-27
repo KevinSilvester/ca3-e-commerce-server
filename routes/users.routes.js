@@ -20,7 +20,7 @@ const { generateID, createFileArray, checkForFiles } = require('../middleware/ut
 const logger = require('../utils/logger')
 const imageToBase64 = require('../utils/imageToBase64')
 const deleteFiles = require('../utils/deleteFiles')
-const moveFile = require('../utils/moveFile')
+const moveFiles = require('../utils/moveFiles')
 
 const { PASSWORD_HASH_SALT_ROUNDS, ACCESS_LEVEL_NORMAL_USER, ACCESS_LEVEL_ADMIN } = process.env
 const router = Router()
@@ -50,7 +50,10 @@ router.post(
          res.status(200).json({
             success: true,
             message: 'Registration successful!',
-            user: { ...user.toObject(), profilePhoto: await imageToBase64(user.profilePhoto.toString()) },
+            user: {
+               ...user.toObject(),
+               profilePhoto: await imageToBase64(user.profilePhoto.toString())
+            },
             token: res.locals.token
          })
       } catch (err) {
@@ -130,7 +133,7 @@ router.get('/:id', verifyToken, async (req, res) => {
          user.email !== res.locals.decodedToken.email
       )
          throw 'Access Denied'
-      
+
       const result = {
          ...user,
          profilePhoto: await imageToBase64(user.profilePhoto.toString())
@@ -161,7 +164,7 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
 router.put(
    '/:id',
-   generateID(''),
+   generateID(null),
    verifyToken,
    createFileArray,
    uploadTemp.array('profilePhoto', 1),
@@ -174,11 +177,10 @@ router.put(
          const oldUser = await UserModel.findById(req.params.id).lean()
          let document = req.body
 
-         if (res.locals.decodedToken.email !== oldUser.email) 
+         if (res.locals.decodedToken.email !== oldUser.email)
             return res.status(404).json({ success: false, error: 'Access Denied' })
-         
-         if (!!res.locals.files.length)
-            await moveFile(res.locals.files[0], 'temp', 'profile')
+
+         if (!!res.locals.files.length) await moveFiles(res.locals.files, 'temp', 'profile')
 
          if ('password' in document) {
             const password = await bcrypt.hash(
@@ -187,11 +189,13 @@ router.put(
             )
             document = { ...document, password }
          }
-         
-         const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, document).lean()
 
+         const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, document, {
+            lean: true,
+            returnDocument: 'after'
+         })
 
-         const user = await {
+         const user = {
             ...updatedUser,
             profilePhoto: await imageToBase64(updatedUser.profilePhoto.toString())
          }
@@ -202,7 +206,6 @@ router.put(
             user,
             token: res.locals.token
          })
-
       } catch (err) {
          await deleteFiles(res.locals.files)
          logger.error({ error: err })

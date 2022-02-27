@@ -1,12 +1,16 @@
 // @ts-check
-// @ts-ignore
 const fs = require('fs')
 const UserModel = require('../models/user.model')
 const logger = require('../utils/logger')
 const deleteFiles = require('../utils/deleteFiles')
 
 /**
- * @type {typeof import('@middleware/user.middleware').validateRequestBody} 
+ *
+ * @param {import('zod').AnyZodObject} schema
+ * @returns {(
+ *    req: import('express').Request, 
+ *    res: import('express').Response, 
+ *    next: import('express').NextFunction) => Promise<void>}
  */
 const validateRequestBody = schema => async (req, res, next) => {
    try {
@@ -21,7 +25,9 @@ const validateRequestBody = schema => async (req, res, next) => {
 }
 
 /**
- * @type {typeof import('@middleware/user.middleware').checkForDuplicates} 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const checkForDuplicates = async (req, res, next) => {
    try {
@@ -39,7 +45,9 @@ const checkForDuplicates = async (req, res, next) => {
 }
 
 /**
- * @type {typeof import('@middleware/user.middleware').checkUserExists} 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const checkUserExists = async (req, res, next) => {
    try {
@@ -54,17 +62,20 @@ const checkUserExists = async (req, res, next) => {
 }
 
 /**
- * @type {typeof import('@middleware/user.middleware').checkIfBodyEmpty} 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const checkIfBodyEmpty = (req, res, next) => {
-   if (!Object.keys(req.body).length && !res.locals.files.length)
-      res.status(400).json({ success: false, error: 'Nothing to update' })
-   else 
-      next()
+   !Object.keys(req.body).length && !res.locals.files.length
+      ? res.status(400).json({ success: false, error: 'Nothing to update' })
+      : next()
 }
 
 /**
- * @type {typeof import('@middleware/user.middleware').createPipeline} 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const createPipeline = (req, res, next) => {
    const { query } = req

@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose')
 
 /**
- * @type {typeof import('@models/user.model').UserSchema}
+ * @type {typeof import('./user.model').UserSchema}
  */
 const UserSchema = new Schema(
    {
@@ -27,7 +27,7 @@ const UserSchema = new Schema(
 )
 
 /**
- * @type {typeof import('@models/user.model').UserModel}
+ * @type {typeof import('./user.model').UserModel}
  */
 const UserModel = model('User', UserSchema)
 module.exports = UserModel

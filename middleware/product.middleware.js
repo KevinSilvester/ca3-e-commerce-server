@@ -3,7 +3,9 @@ const { bodySchema } = require('../schema/product.schema')
 const logger = require('../utils/logger')
 
 /**
- * @type {typeof import('@middleware/product.middleware').validateProductBody} 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const validateProductBody = async (req, res, next) => {
   try {

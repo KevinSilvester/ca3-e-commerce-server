@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose')
 
 /**
- * @type {typeof import('@models/product.model').StockSchema}
+ * @type {typeof import('./product.model').StockSchema}
  */
 const StockSchema = new Schema(
    {
@@ -17,7 +17,7 @@ const StockSchema = new Schema(
 )
 
 /**
- * @type {typeof import('@models/product.model').ProductSchema}
+ * @type {typeof import('./product.model').ProductSchema}
  */
 const ProductSchema = new Schema(
    {
@@ -39,7 +39,7 @@ const ProductSchema = new Schema(
 )
 
 /**
- * @type {typeof import('@models/product.model').ProductModel}
+ * @type {typeof import('./product.model').ProductModel}
  */
 const ProductModel = model('Product', ProductSchema)
 

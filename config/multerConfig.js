@@ -2,13 +2,16 @@
 const multer = require('multer')
 
 /**
- * @type {typeof import('@config/multerConfig').getFileName}
+ * @param {import('express').Request} req 
+ * @param {Express.Multer.File} file
+ * @returns {string}
  */
 const getFileName = (req, file) =>
    `${req.res.locals.id}-${req.files?.length}.${file.mimetype.split('/')[1].replace('e', '')}`
 
 /**
- * @type {typeof import('@config/multerConfig').multerConfig}
+ * @param {string} subDirName 
+ * @returns {import('multer').Options}
  */
 const multerConfig = subDirName => {
    const fullDirName = `./${process.env.IMAGE_UPLOAD_FOLDER}/${subDirName}/`

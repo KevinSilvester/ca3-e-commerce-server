@@ -1,6 +1,6 @@
 import type { Model, Schema, SchemaDefinitionProperty } from 'mongoose'
 
-type StockDocument = {
+type StockSubdocument = {
    XS: SchemaDefinitionProperty<number>
    S: SchemaDefinitionProperty<number>
    M: SchemaDefinitionProperty<number>
@@ -9,7 +9,7 @@ type StockDocument = {
    XXL: SchemaDefinitionProperty<number>
 }
 
-export const StockSchema: Schema<StockDocument, Model<StockDocument, {}, {}, {}>, StockDocument, any>
+export const StockSchema: Schema<StockSubdocument, Model<StockSubdocument, {}, {}, {}>, StockSubdocument, any>
 
 type ProductDocument = {
    _id: SchemaDefinitionProperty<string>

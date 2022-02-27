@@ -6,7 +6,11 @@ const { JWT_KEY_LOCATION, ACCESS_LEVEL_ADMIN } = process.env
 const JWT_PRIVATE_KEY = fs.readFileSync(JWT_KEY_LOCATION, 'utf8')
 
 /**
- * @type {typeof import('@middleware/auth').createToken}
+ * @param {'register' | 'login' | 'edit'} mode
+ * @returns {(
+ *    req: import('express').Request, 
+ *    res: import('express').Response, 
+ *    next: import('express').NextFunction) => void}
  */
 const createToken = mode => (req, res, next) => {
    let accessLevel = 0
@@ -33,7 +37,9 @@ const createToken = mode => (req, res, next) => {
 }
 
 /**
- * @type {typeof import('@middleware/auth').verifyToken}
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const verifyToken = (req, res, next) => {
    try {
@@ -49,7 +55,9 @@ const verifyToken = (req, res, next) => {
 }
 
 /**
- * @type {typeof import('@middleware/auth').verifyAdmin }
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
  */
 const verifyAdmin = (req, res, next) => {
    res.locals.decodedToken.accessLevel === parseInt(ACCESS_LEVEL_ADMIN)
