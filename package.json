@@ -7,7 +7,8 @@
       "start": "NODE_ENV=production node .",
       "dev": "NODE_ENV=development nodemon",
       "check": "prettier --check \"./**/*.js\"",
-      "format": "prettier --write \"./**/*.js\""
+      "format": "prettier --write \"./**/*.js\"",
+      "types": "tsc ./**/*.js --declaration --allowJs --emitDeclarationOnly --outDir types"
    },
    "repository": {
       "type": "git",

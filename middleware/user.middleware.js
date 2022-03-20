@@ -7,8 +7,8 @@ const deleteFiles = require('../utils/deleteFiles')
 /**
  * @param {import('zod').AnyZodObject} schema
  * @returns {(
- *    req: import('express').Request, 
- *    res: import('express').Response, 
+ *    req: import('express').Request,
+ *    res: import('express').Response,
  *    next: import('express').NextFunction) => Promise<void>}
  */
 const validateRequestBody = schema => async (req, res, next) => {
@@ -24,9 +24,9 @@ const validateRequestBody = schema => async (req, res, next) => {
 }
 
 /**
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  */
 const checkForDuplicates = async (req, res, next) => {
    try {
@@ -44,9 +44,9 @@ const checkForDuplicates = async (req, res, next) => {
 }
 
 /**
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  */
 const checkUserExists = async (req, res, next) => {
    try {
@@ -61,9 +61,9 @@ const checkUserExists = async (req, res, next) => {
 }
 
 /**
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  */
 const checkIfBodyEmpty = (req, res, next) => {
    !Object.keys(req.body).length && !res.locals.files.length
@@ -72,9 +72,9 @@ const checkIfBodyEmpty = (req, res, next) => {
 }
 
 /**
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  */
 const createPipeline = (req, res, next) => {
    const { query } = req

@@ -18,7 +18,7 @@ type ProductDocument = {
    price: SchemaDefinitionProperty<number>
    inStock: SchemaDefinitionProperty<boolean>
    category: SchemaDefinitionProperty<'jacket' | 't-shirt' | 'pant' | 'hoodie'>
-   stock: typeof StockSchema
+   stock: SchemaDefinitionProperty<number>
    description: SchemaDefinitionProperty<string>
    gender: SchemaDefinitionProperty<'men' | 'women' | 'unisex'>
    photos: SchemaDefinitionProperty<Types.Array<string>>

@@ -3,8 +3,8 @@ const cloudinary = require('../config/cloudinary')
 const logger = require('../utils/logger')
 
 /**
- * @param {string} base64 
- * @param {string} imageName 
+ * @param {string} base64
+ * @param {string} imageName
  * @param {string} destination
  */
 const imageUpload = async (base64, imageName, destination) => {

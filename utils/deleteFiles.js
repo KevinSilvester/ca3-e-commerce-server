@@ -2,7 +2,7 @@
 const fs = require('fs')
 const logger = require('./logger')
 
-/** 
+/**
  * @param {Array<string>} fileArray
  */
 const deleteFiles = async fileArray => {

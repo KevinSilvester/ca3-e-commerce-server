@@ -1,0 +1,49 @@
+{
+   compound: {
+      should: [
+         {
+            text: {
+               query: 'the',
+               path: 'name',
+               score: { boost: { value: 5 } }
+            }
+         },
+         {
+            text: {
+               query: 'the',
+               path: ['brand','description','category','gender']
+            }
+         }
+      ]
+   }
+}
+
+[
+  {
+    '$search': {
+      'index': 'ca3-e-commerce-searchIndex', 
+      'compound': {
+        'should': [
+          {
+            'text': {
+              'query': 't-shrit', 
+              'path': 'name', 
+              'score': {
+                'boost': {
+                  'value': 10
+                }
+              }
+            }
+          }, {
+            'text': {
+              'query': 't-shrit', 
+              'path': [
+                'brand', 'description', 'category', 'gender'
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+]

@@ -3,7 +3,6 @@ const { Router } = require('express')
 const bcrypt = require('bcrypt')
 const fs = require('fs')
 const multer = require('multer')
-const empty = require('empty-folder')
 
 const multerConfig = require('../config/multerConfig')
 const { createUserSchema, loginUserSchema, editUserSchema } = require('../schema/user.schema')
@@ -161,6 +160,7 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
    }
 })
 
+// Update single user
 router.put(
    '/:id',
    generateID(null),

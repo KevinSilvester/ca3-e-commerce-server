@@ -27,7 +27,7 @@ const ProductSchema = new Schema(
       price: { type: Number, required: true, min: 0.01 },
       inStock: { type: Boolean, required: true },
       category: { type: String, required: true, enum: ['jacket', 't-shirt', 'pant', 'hoodie'] },
-      stock: StockSchema,
+      stock: { type: Number, required: true, min: 0 },
       description: { type: String, required: true },
       gender: { type: String, required: true, enum: ['men', 'women', 'unisex'] },
       photos: { type: [String], required: true }

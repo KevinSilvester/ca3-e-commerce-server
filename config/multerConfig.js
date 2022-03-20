@@ -2,7 +2,7 @@
 const multer = require('multer')
 
 /**
- * @param {import('express').Request} req 
+ * @param {import('express').Request} req
  * @param {Express.Multer.File} file
  * @returns {string}
  */
@@ -10,7 +10,7 @@ const getFileName = (req, file) =>
    `${req.res.locals.id}-${req.files?.length}.${file.mimetype.split('/')[1].replace('e', '')}`
 
 /**
- * @param {string} subDirName 
+ * @param {string} subDirName
  * @returns {import('multer').Options}
  */
 const multerConfig = subDirName => {
